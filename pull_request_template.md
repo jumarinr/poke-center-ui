@@ -1,4 +1,4 @@
-## PokeCenter EPS
+## PokéSura EPS
 
 ### Descripción de los cambios
 * 
