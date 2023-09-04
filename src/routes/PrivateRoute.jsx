@@ -1,14 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Navigate } from 'react-router-dom';
 
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+
+import ContextUser from '../contexts/ContextUser';
 import LayOut from '../components/LayOut/LayOut';
 
 const PrivateComponent = ({ component: Component, ...restOfProps }) => {
-  const [userInfo] = useState(false);
+  const { tokenUser } = useContext(ContextUser);
 
-  return userInfo
+  return tokenUser
     ? (
       <LayOut>
         <Component {...restOfProps} />
