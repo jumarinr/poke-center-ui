@@ -66,6 +66,12 @@ const ListadoTurnos = ({ turnos, isFromSeguimiento, isFromHistorial }) => {
       });
     } catch (error) {
       console.error(error);
+
+      setAlert({
+        isOpen: true,
+        message: 'Error actualizando datos',
+        type: 'error',
+      });
     }
   };
 
@@ -97,6 +103,12 @@ const ListadoTurnos = ({ turnos, isFromSeguimiento, isFromHistorial }) => {
       });
     } catch (error) {
       console.error(error);
+
+      setAlert({
+        isOpen: true,
+        message: 'Error actualizando datos',
+        type: 'error',
+      });
     }
   };
 

@@ -1,20 +1,25 @@
+import _ from 'lodash';
+
 import React, { useEffect, useState } from 'react';
 
 // material ui core
 import Grid from '@mui/material/Grid';
 
 import { parseCitas } from '../Turnos/helpers';
+
 import ListadoTurnos from '../Turnos/ListadoTurnos';
 
+const sortCitas = (citas) => _.orderBy(citas, 'fechaAtencion', 'desc');
+
 const HistorialAtenciones = () => {
-  const [citas, setCitas] = useState(parseCitas(localStorage.getItem('atenciones')));
+  const [citas, setCitas] = useState(sortCitas(parseCitas(localStorage.getItem('atenciones'))));
 
   useEffect(() => {
     const checkCitasData = () => {
       const item = localStorage.getItem('atenciones');
 
       const itemParsed = parseCitas(item);
-      setCitas(itemParsed);
+      setCitas(sortCitas(itemParsed));
     };
 
     window.addEventListener('storage', checkCitasData);

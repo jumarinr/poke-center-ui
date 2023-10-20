@@ -119,6 +119,12 @@ const TurnoActual = ({ turno, isFromSeguimiento }) => {
       });
     } catch (error) {
       console.error(error);
+
+      setAlert({
+        isOpen: true,
+        message: 'Error actualizando datos',
+        type: 'error',
+      });
     }
   };
 

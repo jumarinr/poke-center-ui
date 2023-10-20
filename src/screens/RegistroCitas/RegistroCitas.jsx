@@ -13,6 +13,8 @@ import Button from '@mui/material/Button';
 
 import MedicationIcon from '@mui/icons-material/Medication';
 
+import { validarData } from './helpers';
+
 import CardRegistro from './CardRegistro';
 import CardInfoPokemon from './CardInfoPokemon';
 import ContadorTurno from '../../components/ContadorTurno/ContadorTurno';
@@ -23,6 +25,7 @@ const DEFAULT_FORM_VALUES = {
   trainerId: '',
   cambioEstado: null,
   nivel: 0,
+  pokemonName: '',
 };
 
 const RegistroCitas = () => {
@@ -52,12 +55,19 @@ const RegistroCitas = () => {
   const handleSubmit = () => {
     try {
       const citas = JSON.parse(localStorage.getItem('citas')) || [];
+      const crucialData = _.pick(pokemonInfo, ['sprites', 'name', 'id', 'stats']);
+
+      const validation = validarData({ formValues, stats: crucialData.stats });
+
+      if (validation) {
+        throw new Error(validation);
+      }
 
       citas.push({
         ...formValues,
         createdAt: new Date(),
         pokemonId: pokemonInfo.id,
-        pokemonInfo: _.pick(pokemonInfo, ['sprites', 'name', 'id', 'stats']),
+        pokemonInfo: crucialData,
         turnNumber: citas?.length ? citas.length + 1 : 1,
         id: Date.now(),
       });
