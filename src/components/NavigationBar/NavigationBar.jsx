@@ -15,6 +15,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import SickIcon from '@mui/icons-material/Sick';
+import HistoryIcon from '@mui/icons-material/History';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -81,6 +82,16 @@ const NavigationBar = () => {
             sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}
           >
             Turnos
+          </Button>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={onRedirect('/historial-atenciones')}
+            size="small"
+            endIcon={<HistoryIcon color="primary" />}
+            sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}
+          >
+            Historial Atenciones
           </Button>
 
           <Tooltip title="Cerrar sesión">

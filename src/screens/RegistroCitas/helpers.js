@@ -1,6 +1,8 @@
+import _ from 'lodash';
+
 import axios from 'axios';
 
-export const a = 1;
+import fullSchema from './validations';
 
 export const searchPokemon = async (nombrePokemon) => {
   if (!nombrePokemon) {
@@ -15,4 +17,16 @@ export const searchPokemon = async (nombrePokemon) => {
     console.error(error);
     throw new Error('Pokémon no encontrado, intenta con otro nombre o revisa la ortografia.');
   }
+};
+
+export const validarData = ({ formValues, stats }) => {
+  const hpStat = _.find(stats, (stat) => stat.stat.name === 'hp');
+
+  const maxHP = hpStat?.base_stat || 1000;
+
+  const { error } = fullSchema({ maxHP }).validate(formValues, {
+    abortEarly: true,
+  });
+
+  return error;
 };

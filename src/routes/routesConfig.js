@@ -3,6 +3,7 @@ import Login from '../screens/Login/Login';
 import RegistroCitas from '../screens/RegistroCitas/RegistroCitas';
 import Seguimiento from '../screens/Seguimiento/Seguimiento';
 import Turnos from '../screens/Turnos/Turnos';
+import HistorialAtenciones from '../screens/HistorialAtenciones/HistorialAtenciones';
 
 const routesConfig = [
   {
@@ -28,6 +29,11 @@ const routesConfig = [
   {
     path: '/registrar-citas',
     component: RegistroCitas,
+    isPrivate: true,
+  },
+  {
+    path: '/historial-atenciones',
+    component: HistorialAtenciones,
     isPrivate: true,
   },
 ];

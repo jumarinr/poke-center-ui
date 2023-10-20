@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import {
+  Routes, Route, BrowserRouter, Navigate,
+} from 'react-router-dom';
 
 import React, { Suspense } from 'react';
 
@@ -33,6 +35,11 @@ const RoutesDetails = () => (
               key={route.path}
             />
           ))}
+
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
       </Routes>
     </Suspense>
   </BrowserRouter>
