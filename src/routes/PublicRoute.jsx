@@ -2,13 +2,15 @@
 
 import { Navigate } from 'react-router-dom';
 
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
-const PublicComponent = ({ component: Component, ...restOfProps }) => {
-  const [userInfo] = useState(false);
+import ContextUser from '../contexts/ContextUser';
 
-  return userInfo
+const PublicComponent = ({ component: Component, ...restOfProps }) => {
+  const { tokenUser } = useContext(ContextUser);
+
+  return tokenUser
     ? <Navigate to="/" replace />
     : <Component {...restOfProps} />;
 };

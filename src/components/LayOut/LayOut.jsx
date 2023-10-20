@@ -2,12 +2,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// material ui core
+import Grid from '@mui/material/Grid';
+
+import NavigationBar from '../NavigationBar/NavigationBar';
+
 const LayOut = ({ children }) => (
   <>
-    <div>LayOut</div>
-    <div>
-      {children}
-    </div>
+    <NavigationBar />
+    <Grid container className="d-flex justify-content-center">
+      <Grid item xs={11.5}>
+        <div className="mt-5">
+          {children}
+        </div>
+      </Grid>
+    </Grid>
+
   </>
 );
 

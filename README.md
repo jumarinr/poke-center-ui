@@ -1,4 +1,4 @@
-# PokeCenter
+# PokeSura
 Para ejecutar el proyecto ejecute el comando `npm start`. En caso de no definir una base de datos
 en la variable de entorno `DB_URL` se guardarán los datos en el localstorage
 
