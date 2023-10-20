@@ -18,7 +18,7 @@ import TextField from '@mui/material/TextField';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 
 import { searchPokemon } from './helpers';
-import { OPTIONS_ESTADOS } from '../../constants';
+import { KEY_ENTER, OPTIONS_ESTADOS } from '../../constants';
 
 const CardRegistro = (props) => {
   const {
@@ -37,10 +37,18 @@ const CardRegistro = (props) => {
     try {
       const data = await searchPokemon(pokemonSearch);
       setPokemonInfo(data);
+
+      handleChangeForm({
+        target: {
+          value: pokemonSearch,
+          name: 'pokemonName',
+        },
+      });
     } catch (error) {
       setAlert({
         message: error.message,
         isOpen: true,
+        type: 'error',
       });
       setPokemonInfo(null);
     } finally {
@@ -50,9 +58,16 @@ const CardRegistro = (props) => {
 
   const onNameChange = ({ target }) => setPokemonSearch(target.value);
 
+  const onEnter = (event) => {
+    if (event.keyCode === KEY_ENTER) {
+      handleSearchPokemon();
+    }
+  };
+
   return (
     <Grid container spacing={2}>
 
+      {/* Nombre entrenador */}
       <Grid item xs={12} md={12}>
         <TextField
           fullWidth
@@ -62,9 +77,11 @@ const CardRegistro = (props) => {
           name="trainerName"
           value={formValues.trainerName}
           onChange={handleChangeForm}
+          required
         />
       </Grid>
 
+      {/* id entrenador */}
       <Grid item xs={12} md={12}>
         <TextField
           fullWidth
@@ -74,12 +91,14 @@ const CardRegistro = (props) => {
           name="trainerId"
           value={formValues.trainerId}
           onChange={handleChangeForm}
+          required
         />
       </Grid>
 
+      {/* Nombre Pokemon */}
       <Grid item xs={12} md={12}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel htmlFor="pokemonInput">
+        <FormControl fullWidth variant="outlined" required>
+          <InputLabel htmlFor="pokemonInput" required>
             Ingrese su Pokémon
           </InputLabel>
           <OutlinedInput
@@ -89,6 +108,8 @@ const CardRegistro = (props) => {
             onChange={onNameChange}
             value={pokemonSearch}
             name="pokemonInput"
+            onBlur={handleSearchPokemon}
+            onKeyDown={onEnter}
             endAdornment={(
               <InputAdornment position="end">
                 {isLoadingData
@@ -111,13 +132,15 @@ const CardRegistro = (props) => {
         </FormControl>
       </Grid>
 
+      {/* Puntos de salud */}
       <Grid item xs={12} md={12}>
         <FormControl fullWidth>
-          <InputLabel htmlFor="hp">Puntos de salud</InputLabel>
+          <InputLabel htmlFor="hp" required>Puntos de salud</InputLabel>
           <OutlinedInput
             id="hp"
             value={formValues.hp}
             name="hp"
+            required
             type="number"
             onChange={({ target }) => handleChangeForm({
               target: {
@@ -135,6 +158,33 @@ const CardRegistro = (props) => {
         </FormControl>
       </Grid>
 
+      {/* Nivel */}
+      <Grid item xs={12} md={12}>
+        <FormControl fullWidth>
+          <InputLabel htmlFor="nivel" required>Puntos de combate</InputLabel>
+          <OutlinedInput
+            id="nivel"
+            required
+            value={formValues.nivel}
+            name="nivel"
+            type="number"
+            onChange={({ target }) => handleChangeForm({
+              target: {
+                name: target.name,
+                value: parseInt(target.value, 10),
+              },
+            })}
+            endAdornment={(
+              <InputAdornment position="end">
+                / 100 Nivel
+              </InputAdornment>
+            )}
+            label="Puntos de combate"
+          />
+        </FormControl>
+      </Grid>
+
+      {/* Estado */}
       <Grid item xs={12} md={12}>
         <Autocomplete
           id="country-select-demo"
@@ -173,30 +223,6 @@ const CardRegistro = (props) => {
             />
           )}
         />
-      </Grid>
-
-      <Grid item xs={12} md={12}>
-        <FormControl fullWidth>
-          <InputLabel htmlFor="nivel">Puntos de combate</InputLabel>
-          <OutlinedInput
-            id="nivel"
-            value={formValues.nivel}
-            name="nivel"
-            type="number"
-            onChange={({ target }) => handleChangeForm({
-              target: {
-                name: target.name,
-                value: parseInt(target.value, 10),
-              },
-            })}
-            endAdornment={(
-              <InputAdornment position="end">
-                CP
-              </InputAdornment>
-            )}
-            label="Puntos de combate"
-          />
-        </FormControl>
       </Grid>
 
     </Grid>

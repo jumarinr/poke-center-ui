@@ -36,3 +36,5 @@ export const OPTIONS_ESTADOS = [
   },
 
 ];
+
+export const KEY_ENTER = 13;

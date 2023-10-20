@@ -2,10 +2,10 @@
   width: 300;
   height: 35px;
   border-radius: 4px;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: transparent !important;
   overflow: hidden;
 }
 
