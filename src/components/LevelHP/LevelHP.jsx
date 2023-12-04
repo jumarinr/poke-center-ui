@@ -9,7 +9,7 @@ const LevelHP = ({ level }) => (
       <div className="health-bar" style={{ width: `${level || 0}%` }} />
     </div>
     <div className="health-text">
-      {`${level} / ${100} Nivel`}
+      {`${level || 0} / ${100} Nivel`}
     </div>
   </div>
 );

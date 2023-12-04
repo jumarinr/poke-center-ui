@@ -26,7 +26,7 @@ const BarHP = ({ currentHP, maxHP }) => {
         <div className="health-bar" style={{ width: `${healthPercentage || 0}%`, backgroundColor: barColor }} />
       </div>
       <div className="health-text">
-        {`${currentHP} / ${maxHP} HP`}
+        {`${currentHP || 0} / ${maxHP} HP`}
       </div>
     </div>
   );
