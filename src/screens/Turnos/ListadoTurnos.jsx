@@ -10,7 +10,8 @@ import PropTypes from 'prop-types';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-import { parseCitas } from './helpers';
+import { onCambiaPrioridad } from '../../http/llamados';
+import { onUpdateSystem } from './helpers';
 
 import columnsTurnos from './columnsTurnos';
 
@@ -26,90 +27,66 @@ const ListadoTurnos = ({ turnos, isFromSeguimiento, isFromHistorial }) => {
     isOpen: !prev.isOpen,
   }));
 
-  const bajarPrioridad = (row) => {
-    const citas = parseCitas(localStorage.getItem('citas'));
+  const bajarPrioridad = async (row) => {
+    const lastCita = _.last(turnos);
 
-    const lastCita = _.last(citas);
-
-    try {
-      if (lastCita.id === row.id) {
-        setAlert({
-          isOpen: true,
-          message: 'No puede bajar más la prioridad',
-          type: 'error',
-        });
-
-        return;
-      }
-
-      const currentIndexTurn = _.findIndex(citas, { id: row.id });
-
-      const nextTurn = citas[currentIndexTurn + 1];
-
-      citas.splice(currentIndexTurn + 1, 1, {
-        ...row,
-        turnNumber: nextTurn?.turnNumber,
-      });
-
-      citas.splice(currentIndexTurn, 1, {
-        ...nextTurn,
-        turnNumber: row?.turnNumber,
-      });
-
-      localStorage.setItem('citas', JSON.stringify(citas));
-      window.dispatchEvent(new Event('storage'));
-
+    if (lastCita.id === row.id) {
       setAlert({
         isOpen: true,
-        message: 'Prioridad cambiada con éxito',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error(error);
-
-      setAlert({
-        isOpen: true,
-        message: 'Error actualizando datos',
+        message: 'No puede bajar más la prioridad',
         type: 'error',
       });
+
+      return;
     }
+
+    const datosCita = await onCambiaPrioridad({
+      id: row.id,
+      turn_number: row.turnNumber + 1,
+    });
+
+    if (datosCita.isError) {
+      setAlert({
+        isOpen: true,
+        message: datosCita.error,
+        type: 'error',
+      });
+
+      return;
+    }
+
+    onUpdateSystem();
+
+    setAlert({
+      isOpen: true,
+      message: 'Prioridad cambiada con éxito',
+      type: 'success',
+    });
   };
 
-  const subirPrioridad = (row) => {
-    const citas = parseCitas(localStorage.getItem('citas'));
+  const subirPrioridad = async (row) => {
+    const datosCita = await onCambiaPrioridad({
+      id: row.id,
+      turn_number: row.turnNumber - 1,
+    });
 
-    try {
-      const currentIndexTurn = _.findIndex(citas, { id: row.id });
-
-      const previousTurn = citas[currentIndexTurn - 1];
-
-      citas.splice(currentIndexTurn - 1, 1, {
-        ...row,
-        turnNumber: previousTurn?.turnNumber,
-      });
-
-      citas.splice(currentIndexTurn, 1, {
-        ...previousTurn,
-        turnNumber: row?.turnNumber,
-      });
-
-      localStorage.setItem('citas', JSON.stringify(citas));
-      window.dispatchEvent(new Event('storage'));
-
+    if (datosCita.isError) {
       setAlert({
         isOpen: true,
-        message: 'Prioridad cambiada con éxito',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error(error);
-
-      setAlert({
-        isOpen: true,
-        message: 'Error actualizando datos',
+        message: datosCita.error,
         type: 'error',
       });
+
+      return;
     }
+
+    onUpdateSystem();
+
+    setAlert({
+      isOpen: true,
+      message: 'Prioridad cambiada con éxito',
+      type: 'success',
+    });
   };
 
   if (_.isEmpty(turnos)) {

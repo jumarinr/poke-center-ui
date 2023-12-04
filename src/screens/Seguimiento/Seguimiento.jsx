@@ -3,35 +3,34 @@ import React, { useEffect, useMemo, useState } from 'react';
 // material ui core
 import Grid from '@mui/material/Grid';
 
-import { getProximosTurnos, parseCitas } from '../Turnos/helpers';
+import { getProximosTurnos } from '../Turnos/helpers';
+import { leerAtenciones } from '../../http/llamados';
 
 import TurnoActual from '../Turnos/TurnoActual';
 import ListadoTurnos from '../Turnos/ListadoTurnos';
-// import PropTypes from 'prop-types'
 
 const IS_FROM_SEGUIMIENTO = true;
 
 const Seguimiento = () => {
-  const [citas, setCitas] = useState(parseCitas(localStorage.getItem('citas')));
+  const [citas, setCitas] = useState([]);
 
   const citasRestantes = useMemo(() => getProximosTurnos(citas, IS_FROM_SEGUIMIENTO), [citas]);
 
   useEffect(() => {
-    const checkCitasData = () => {
-      const item = localStorage.getItem('citas');
+    const checkCitasData = async () => {
+      const request = await leerAtenciones(false);
 
-      const itemParsed = parseCitas(item);
-      setCitas(itemParsed);
+      setCitas(request.data || []);
     };
 
     window.addEventListener('storage', checkCitasData);
+
+    checkCitasData();
 
     return () => {
       window.removeEventListener('storage', checkCitasData);
     };
   }, []);
-
-  console.log(citasRestantes);
 
   return (
     <Grid container spacing={3}>

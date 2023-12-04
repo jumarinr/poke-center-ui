@@ -13,8 +13,6 @@ export const parseCitas = (citas) => {
   }
 };
 
-export const defaultExport = 1;
-
 export const getProximosTurnos = (citas, isFromSeguimiento = false) => {
   const copyCitas = _.cloneDeep(citas) || [];
 
@@ -31,4 +29,9 @@ export const getProximosTurnos = (citas, isFromSeguimiento = false) => {
   } catch (error) {
     return [];
   }
+};
+
+export const onUpdateSystem = () => {
+  localStorage.setItem('updateSystem', Date.now());
+  window.dispatchEvent(new Event('storage'));
 };

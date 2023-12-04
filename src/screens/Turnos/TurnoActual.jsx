@@ -14,13 +14,34 @@ import TextField from '@mui/material/TextField';
 import HealingIcon from '@mui/icons-material/Healing';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
-import { parseCitas } from './helpers';
+import { onUpdateSystem } from './helpers';
+
+import {
+  leerAtenciones, onAtender, onCambiaPrioridad, onCurar,
+} from '../../http/llamados';
 
 import useStyles from '../../components/ContadorTurno/styles';
 import InfoTurnoPokemon from './InfoTurnoPokemon';
 
 const TurnoActual = ({ turno, isFromSeguimiento }) => {
   const classes = useStyles();
+
+  const [citas, setCitas] = useState([]);
+
+  useEffect(() => {
+    const checkCitasData = async () => {
+      const request = await leerAtenciones(false);
+
+      setCitas(request.data || []);
+    };
+
+    window.addEventListener('storage', checkCitasData);
+
+    checkCitasData();
+    return () => {
+      window.removeEventListener('storage', checkCitasData);
+    };
+  }, []);
 
   const [comment, setComment] = useState('');
 
@@ -36,18 +57,23 @@ const TurnoActual = ({ turno, isFromSeguimiento }) => {
     }
   }, [turno]);
 
-  const atenderPokemon = () => {
-    const citas = parseCitas(localStorage.getItem('citas'));
-
-    const currentIndex = _.findIndex(citas, { id: turno.id });
-
-    citas.splice(currentIndex, 1, {
-      ...turno,
+  const atenderPokemon = async () => {
+    const datosCita = await onAtender({
+      id: turno.id,
       estado: 'atender',
     });
 
-    localStorage.setItem('citas', JSON.stringify(citas));
-    window.dispatchEvent(new Event('storage'));
+    if (datosCita.isError) {
+      setAlert({
+        isOpen: true,
+        message: datosCita.error,
+        type: 'error',
+      });
+
+      return;
+    }
+
+    onUpdateSystem();
   };
 
   const handleOpenAlert = () => setAlert((prev) => ({
@@ -55,23 +81,23 @@ const TurnoActual = ({ turno, isFromSeguimiento }) => {
     isOpen: !prev.isOpen,
   }));
 
-  const curarPokemon = () => {
-    const citas = parseCitas(localStorage.getItem('citas'));
-    const atenciones = parseCitas(localStorage.getItem('atenciones'));
-
-    atenciones.push({
-      ...turno,
+  const curarPokemon = async () => {
+    const datosCita = await onCurar({
+      id: turno.id,
       comment,
-      fechaAtencion: Date.now(),
     });
 
-    const indexCitas = _.findIndex(citas, { id: turno.id });
+    if (datosCita.isError) {
+      setAlert({
+        isOpen: true,
+        message: datosCita.error,
+        type: 'error',
+      });
 
-    citas.splice(indexCitas, 1);
+      return;
+    }
 
-    localStorage.setItem('citas', JSON.stringify(citas));
-    localStorage.setItem('atenciones', JSON.stringify(atenciones));
-    window.dispatchEvent(new Event('storage'));
+    onUpdateSystem();
 
     setAlert({
       isOpen: true,
@@ -81,51 +107,41 @@ const TurnoActual = ({ turno, isFromSeguimiento }) => {
     setComment('');
   };
 
-  const bajarPrioridad = () => {
-    const citas = parseCitas(localStorage.getItem('citas'));
-
+  const bajarPrioridad = async () => {
     const lastCita = _.last(citas);
 
-    try {
-      if (lastCita.id === turno.id) {
-        setAlert({
-          isOpen: true,
-          message: 'No puede bajar más la prioridad',
-          type: 'error',
-        });
-
-        return;
-      }
-
-      const nextTurn = citas[1];
-
-      citas.splice(1, 1, {
-        ...turno,
-        turnNumber: nextTurn?.turnNumber,
-      });
-
-      citas.splice(0, 1, {
-        ...nextTurn,
-        turnNumber: turno?.turnNumber,
-      });
-
-      localStorage.setItem('citas', JSON.stringify(citas));
-      window.dispatchEvent(new Event('storage'));
-
+    if (lastCita.id === turno.id) {
       setAlert({
         isOpen: true,
-        message: 'Prioridad cambiada con éxito',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error(error);
-
-      setAlert({
-        isOpen: true,
-        message: 'Error actualizando datos',
+        message: 'No puede bajar más la prioridad',
         type: 'error',
       });
+
+      return;
     }
+
+    const datosCita = await onCambiaPrioridad({
+      id: turno.id,
+      turn_number: turno.turnNumber + 1,
+    });
+
+    if (datosCita.isError) {
+      setAlert({
+        isOpen: true,
+        message: datosCita.error,
+        type: 'error',
+      });
+
+      return;
+    }
+
+    onUpdateSystem();
+
+    setAlert({
+      isOpen: true,
+      message: 'Prioridad cambiada con éxito',
+      type: 'success',
+    });
   };
 
   if (!turno || (turno.estado !== 'atender' && !isFromSeguimiento)) {

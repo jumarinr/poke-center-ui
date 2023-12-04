@@ -50,7 +50,7 @@ const InfoTurnoPokemon = ({ pokemonInfo, formValues }) => {
         </div>
 
         <div style={{ width: '8rem' }} className="ml-2">
-          {formValues.cambioEstado
+          {formValues.cambioEstado?.imgSrc
             ? (
               <div className="text-center mt-2">
                 <img
