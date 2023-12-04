@@ -72,7 +72,7 @@ const columnsTurnos = (params) => {
       align: 'center',
       headerAlign: 'center',
       width: 150,
-      renderCell: ({ row }) => (row.cambioEstado
+      renderCell: ({ row }) => (row?.cambioEstado?.imgSrc
         ? (
           <img
             loading="lazy"
@@ -90,7 +90,7 @@ const columnsTurnos = (params) => {
       autoWidth: true,
       headerAlign: 'center',
       width: 150,
-      renderCell: ({ row }) => moment(row.id).format('YYYY-MM-DD hh:mm A'),
+      renderCell: ({ row }) => moment(row.createdAt).format('YYYY-MM-DD hh:mm A'),
     },
   ];
 
@@ -140,8 +140,6 @@ const columnsTurnos = (params) => {
       ),
     });
   }
-
-  console.log(bajarPrioridad, subirPrioridad);
 
   return columns;
 };
