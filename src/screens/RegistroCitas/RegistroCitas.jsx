@@ -14,6 +14,8 @@ import Button from '@mui/material/Button';
 import MedicationIcon from '@mui/icons-material/Medication';
 
 import { validarData } from './helpers';
+import { onCrearAtencion } from '../../http/llamados';
+import { onUpdateSystem } from '../Turnos/helpers';
 
 import CardRegistro from './CardRegistro';
 import CardInfoPokemon from './CardInfoPokemon';
@@ -52,9 +54,8 @@ const RegistroCitas = () => {
 
   const isTherePokemonInfo = useMemo(() => !!pokemonInfo, [pokemonInfo]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      const citas = JSON.parse(localStorage.getItem('citas')) || [];
       const crucialData = _.pick(pokemonInfo, ['sprites', 'name', 'id', 'stats']);
 
       const validation = validarData({ formValues, stats: crucialData.stats });
@@ -63,17 +64,30 @@ const RegistroCitas = () => {
         throw new Error(validation);
       }
 
-      citas.push({
-        ...formValues,
-        createdAt: new Date(),
-        pokemonId: pokemonInfo.id,
-        pokemonInfo: crucialData,
-        turnNumber: citas?.length ? citas.length + 1 : 1,
-        id: Date.now(),
-      });
+      const cita = {
+        hp: formValues.hp,
+        trainer_name: formValues.trainerName,
+        trainer_id: formValues.trainerId,
+        cambio_estado: formValues.cambioEstado || {},
+        nivel: formValues.nivel,
+        pokemon_name: pokemonInfo.name,
+        pokemon_id: pokemonInfo.id,
+        pokemon_info: crucialData,
+      };
 
-      localStorage.setItem('citas', JSON.stringify(citas));
-      window.dispatchEvent(new Event('storage'));
+      const resultPost = await onCrearAtencion(cita);
+
+      if (resultPost.error) {
+        setAlert({
+          isOpen: true,
+          message: resultPost.error,
+          type: 'error',
+        });
+
+        return;
+      }
+
+      onUpdateSystem();
 
       setAlert({
         isOpen: true,
@@ -84,7 +98,7 @@ const RegistroCitas = () => {
       setHasSendTurn(true);
       setFormValues(DEFAULT_FORM_VALUES);
       setPokemonInfo(null);
-      setTurnNumber(citas.length);
+      setTurnNumber(resultPost.data);
     } catch (error) {
       setAlert({
         isOpen: true,
