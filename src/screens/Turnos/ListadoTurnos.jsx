@@ -11,9 +11,9 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 import { onCambiaPrioridad } from '../../http/llamados';
+import { onUpdateSystem } from './helpers';
 
 import columnsTurnos from './columnsTurnos';
-import { onUpdateSystem } from './helpers';
 
 const ListadoTurnos = ({ turnos, isFromSeguimiento, isFromHistorial }) => {
   const [alert, setAlert] = useState({
